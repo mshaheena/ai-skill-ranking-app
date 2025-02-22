@@ -71,9 +71,9 @@ if st.button("Predict AI Skill Rank"):
 st.subheader("🎯 AI Skill Rank Prediction")
 
 # User Inputs
-region = st.selectbox("🌍 Select Region", ["South America", "Asia", "North America"])
-income_group = st.selectbox("💰 Select Income Group", ["Low", "Middle", "High"])
-competency_id = st.slider("📈 Competency ID (Skill Level)", 0, 19, 5)
+region = st.selectbox("🌍 Select Region", ["South America", "Asia", "North America"], key="region_select")
+income_group = st.selectbox("💰 Select Income Group", ["Low", "Middle", "High"], key="income_select")
+competency_id = st.slider("📈 Competency ID (Skill Level)", 0, 19, 5, key="competency_slider")
 
 # Prediction Button
 if st.button("Predict AI Skill Rank"):
