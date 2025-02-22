@@ -1,10 +1,8 @@
-# Load dataset 
-try:
-    df = pd.read_csv("Coursera AI GSI Percentile and Category.csv")
-
-    st.write("📂 Dataset Loaded Successfully!")
-except:
-    st.warning("⚠ Dataset not found. Please upload it.")
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import joblib
 
 # Load trained model
 try:
