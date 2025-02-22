@@ -1,3 +1,17 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import joblib
+
+import streamlit as st
+
+st.title("🚀 AI-Powered Data Analysis & Prediction Model")
+st.subheader("📌 Project Overview")
+st.write("""
+This project analyzes AI skill trends using a dataset from Coursera's Global AI Skills Index.
+It performs data preprocessing, exploratory data analysis (EDA), and machine learning predictions.
+""")
 
     "# AI-Powered Data Analysis & Prediction Model\n",
     "\n",
