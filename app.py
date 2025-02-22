@@ -9,6 +9,8 @@ import streamlit as st
 st.title("🚀 AI-Powered Data Analysis & Prediction Model")
 st.subheader("📌 Project Overview")
 st.write("""
+if st.button("Run Code"):
+    st.write("The code ran successfully!")
 This project analyzes AI skill trends using a dataset from Coursera's Global AI Skills Index.
 It performs data preprocessing, exploratory data analysis (EDA), and machine learning predictions.
 """)
