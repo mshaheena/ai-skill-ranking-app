@@ -1,7 +1,7 @@
 # Load dataset 
 try:
-    df = pd.read_csv("Coursera AI GSI Percentile and Category.csv
-")  
+    df = pd.read_csv("Coursera AI GSI Percentile and Category.csv")
+
     st.write("📂 Dataset Loaded Successfully!")
 except:
     st.warning("⚠ Dataset not found. Please upload it.")
