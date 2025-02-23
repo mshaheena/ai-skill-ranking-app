@@ -6,6 +6,14 @@ import joblib
 
 # Load trained model
 try:
+    df = pd.read_csv("Coursera AI GSI Percentile and Category.csv") 
+    st.write("📂 Dataset Loaded Successfully!")
+except FileNotFoundError:
+    st.warning("⚠ Dataset not found. Please upload it to GitHub.")
+except Exception as e:
+    st.error(f"⚠ Error loading dataset: {e}")
+
+try:
     model = joblib.load("xgboost_ai_skill_model.pkl")
     st.write("✅ Model Loaded Successfully!")
 except:
