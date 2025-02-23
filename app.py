@@ -4,11 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
+from sklearn.cluster import KMeans
 from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, confusion_matrix
+from sklearn.metrics import mean_squared_error, r2_score, accuracy_score
 
 # 🚀 **App Title**
 st.title("AI Skill Ranking Prediction App")
@@ -20,19 +22,18 @@ try:
 except FileNotFoundError:
     st.warning("⚠ Dataset not found. Please upload it to GitHub.")
     df = None
-except Exception as e:
-    st.error(f"⚠ Error loading dataset: {e}")
-    df = None
 
 # 📌 **Load Trained Models**
 try:
     xgb_model = joblib.load("xgboost_ai_skill_model.pkl")
     rf_model = joblib.load("random_forest_model.pkl")
     svm_model = joblib.load("svm_model.pkl")
+    lin_reg_model = joblib.load("linear_regression.pkl")
+    logistic_model = joblib.load("logistic_regression.pkl")
     st.write("✅ Models Loaded Successfully!")
 except FileNotFoundError:
     st.warning("⚠ Model files not found. Please upload them to GitHub.")
-    xgb_model = rf_model = svm_model = None
+    xgb_model = rf_model = svm_model = lin_reg_model = logistic_model = None
 
 # 📊 **Dataset Overview & Visualizations**
 if df is not None:
@@ -44,7 +45,7 @@ if df is not None:
     # 📊 **Bar Graph**
     with tab1:
         st.subheader("📊 AI Skill Distribution by Region")
-        selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique())
+        selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique(), key="region_bar")
         filtered_df = df[df["region"] == selected_region]
 
         fig, ax = plt.subplots(figsize=(8, 5))
@@ -104,42 +105,31 @@ feature_vector[3] = competency_id
 # Convert to NumPy array for prediction
 user_input = np.array([feature_vector])
 
-# 🎯 **Prediction with Multiple Models**
+# 🎯 **Predictions with Multiple Models**
 st.subheader("📌 Model Predictions")
 
-if st.button("Predict AI Skill Rank", key="predict_button"):
-    if xgb_model is not None and rf_model is not None and svm_model is not None:
-       
-       try:
-           model = joblib.load("ai_skill_rank_model.pkl")
-           st.write("✅ Model Loaded Successfully!")
-       except FileNotFoundError:
-           st.warning("⚠ Model file not found. Please upload `ai_skill_rank_model.pkl` to GitHub.")
-           model = None
-
-if st.button("Predict AI Skill Rank", key="predict_button"):
-    if model is not None:
+if st.button("Predict AI Skill Rank", key="predict_button_final"):
+    if xgb_model and rf_model and svm_model and lin_reg_model and logistic_model:
         try:
-            prediction = model.predict(user_input)[0]
+            xgb_pred = xgb_model.predict(user_input)[0]
+            rf_pred = rf_model.predict(user_input)[0]
+            svm_pred = svm_model.predict(user_input)[0]
+            lin_reg_pred = lin_reg_model.predict(user_input)[0]
+            logistic_pred = logistic_model.predict(user_input)[0]
+
             avg_rank = df["percentile_rank"].mean() if df is not None else 0.5
 
-            if prediction > avg_rank:
-                st.success(f"🎯 **Predicted AI Skill Rank: {prediction:.2f}** 🚀 (Above Average!)")
-            else:
-                st.warning(f"⚠ **Predicted AI Skill Rank: {prediction:.2f}** 📉 (Below Average)")
+            st.write(f"📌 **XGBoost Prediction:** {xgb_pred:.2f}")
+            st.write(f"📌 **Random Forest Prediction:** {rf_pred:.2f}")
+            st.write(f"📌 **SVM Prediction:** {svm_pred:.2f}")
+            st.write(f"📌 **Linear Regression Prediction:** {lin_reg_pred:.2f}")
+            st.write(f"📌 **Logistic Regression Prediction:** {logistic_pred:.2f}")
+
         except Exception as e:
             st.error(f"⚠ Prediction failed: {e}")
     else:
-        st.warning("⚠ Model is not loaded. Please check `ai_skill_rank_model.pkl`.")
-
-
-# 🔍 **Model Performance Metrics**
-st.subheader("🔍 Model Performance")
-st.write("✅ **XGBoost R² Score:** 0.92")
-st.write("✅ **XGBoost Mean Squared Error:** 0.0057")
-st.write("✅ **Random Forest R² Score:** 0.89")
-st.write("✅ **SVM R² Score:** 0.85")
+        st.warning("⚠ Models are not loaded. Please check your model files.")
 
 # ✅ **Debugging Button**
-if st.button("Run Code", key="run_code_button"):
+if st.button("Run Code", key="run_code_button_final"):
     st.write("✅ **The code ran successfully!**")
