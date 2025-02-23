@@ -37,17 +37,18 @@ if df is not None:
 
     # 📊 **Bar Graph - AI Skill Distribution by Region**
     with tab1:
-    st.subheader("📊 AI Skill Distribution by Region")
-    selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique())
-    filtered_df = df[df["region"] == selected_region]
+          
+          st.subheader("📊 AI Skill Distribution by Region")
+          selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique())
+          filtered_df = df[df["region"] == selected_region]
     
-    fig, ax = plt.subplots(figsize=(8, 5))
-    sns.barplot(x=filtered_df["competency_id"], y=filtered_df["percentile_rank"], palette="viridis", ax=ax)
-    plt.xticks(rotation=45)
-    plt.xlabel("Competency ID")
-    plt.ylabel("AI Skill Percentile Rank")
-    plt.title(f"AI Skill Distribution in {selected_region}")
-    st.pyplot(fig)
+          fig, ax = plt.subplots(figsize=(8, 5))
+          sns.barplot(x=filtered_df["competency_id"], y=filtered_df["percentile_rank"], palette="viridis", ax=ax)
+          plt.xticks(rotation=45)
+          plt.xlabel("Competency ID")
+          plt.ylabel("AI Skill Percentile Rank")
+          plt.title(f"AI Skill Distribution in {selected_region}")
+          st.pyplot(fig)
 
 
     # 🔥 **Heatmap - Correlation Matrix**
