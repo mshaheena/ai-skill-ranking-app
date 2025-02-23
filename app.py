@@ -109,27 +109,29 @@ st.subheader("📌 Model Predictions")
 
 if st.button("Predict AI Skill Rank", key="predict_button"):
     if xgb_model is not None and rf_model is not None and svm_model is not None:
-        try:
-            xgb_pred = xgb_model.predict(user_input)[0]
-            rf_pred = rf_model.predict(user_input)[0]
-            svm_pred = svm_model.predict(user_input)[0]
+       
+       try:
+           model = joblib.load("ai_skill_rank_model.pkl")
+           st.write("✅ Model Loaded Successfully!")
+       except FileNotFoundError:
+           st.warning("⚠ Model file not found. Please upload `ai_skill_rank_model.pkl` to GitHub.")
+           model = None
 
+if st.button("Predict AI Skill Rank", key="predict_button"):
+    if model is not None:
+        try:
+            prediction = model.predict(user_input)[0]
             avg_rank = df["percentile_rank"].mean() if df is not None else 0.5
 
-            st.write(f"📌 **XGBoost Prediction:** {xgb_pred:.2f}")
-            st.write(f"📌 **Random Forest Prediction:** {rf_pred:.2f}")
-            st.write(f"📌 **SVM Prediction:** {svm_pred:.2f}")
-
-            # Compare prediction to dataset average
-            if xgb_pred > avg_rank:
-                st.success(f"🎯 **Predicted AI Skill Rank: {xgb_pred:.2f}** 🚀 (Above Average!)")
+            if prediction > avg_rank:
+                st.success(f"🎯 **Predicted AI Skill Rank: {prediction:.2f}** 🚀 (Above Average!)")
             else:
-                st.warning(f"⚠ **Predicted AI Skill Rank: {xgb_pred:.2f}** 📉 (Below Average)")
-
+                st.warning(f"⚠ **Predicted AI Skill Rank: {prediction:.2f}** 📉 (Below Average)")
         except Exception as e:
             st.error(f"⚠ Prediction failed: {e}")
     else:
-        st.warning("⚠ Models are not loaded. Please check your model files.")
+        st.warning("⚠ Model is not loaded. Please check `ai_skill_rank_model.pkl`.")
+
 
 # 🔍 **Model Performance Metrics**
 st.subheader("🔍 Model Performance")
