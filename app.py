@@ -62,7 +62,7 @@ region = st.selectbox("🌍 Select Region", ["South America", "Asia", "North Ame
 income_group = st.selectbox("💰 Select Income Group", ["Low", "Middle", "High"])
 competency_id = st.slider("📈 Competency ID (Skill Level)", 0, 19, 5)
 
-if st.button("Predict AI Skill Rank"):
+if st.button("Predict AI Skill Rank", key="predict_button"):
     input_data = [[competency_id]]  # Adjust this to match model input format
     prediction = model.predict(input_data)[0]
     st.success(f"🎯 Predicted AI Skill Rank: {prediction:.2f}")
