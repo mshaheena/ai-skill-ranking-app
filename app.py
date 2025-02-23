@@ -32,6 +32,42 @@ It performs data preprocessing, exploratory data analysis (EDA), and machine lea
 # Load Dataset
 try:
     df = pd.read_csv("Coursera AI GSI Percentile and Category.csv")  
+st.subheader("📊 AI Skill Distribution by Region")
+
+# Check if dataset is loaded
+if 'df' in locals():
+    region_counts = df["region"].value_counts()
+    fig, ax = plt.subplots(figsize=(8,5))
+    sns.barplot(x=region_counts.index, y=region_counts.values, palette="viridis", ax=ax)
+    plt.xticks(rotation=45)
+    plt.xlabel("Region")
+    plt.ylabel("Number of AI Professionals")
+    plt.title("AI Skill Distribution by Region")
+    st.pyplot(fig)
+else:
+    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
+st.subheader("🔥 Correlation Heatmap of AI Skills")
+
+if 'df' in locals():
+    plt.figure(figsize=(8,6))
+    correlation_matrix = df.corr()
+    sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+    st.pyplot(plt)
+else:
+    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
+st.subheader("📦 AI Skill Percentile Distribution by Region")
+
+if 'df' in locals():
+    fig, ax = plt.subplots(figsize=(8,5))
+    sns.boxplot(x="region", y="percentile_rank", data=df, palette="coolwarm", ax=ax)
+    plt.xticks(rotation=45)
+    plt.xlabel("Region")
+    plt.ylabel("AI Skill Percentile Rank")
+    plt.title("AI Skill Distribution by Region")
+    st.pyplot(fig)
+else:
+    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
+
     st.write("📂 **Dataset Loaded Successfully!**")
 except:
     st.warning("⚠ **Dataset not found. Please upload it to GitHub.**")
@@ -127,9 +163,16 @@ feature_vector[3] = competency_id
 user_input = np.array([feature_vector])
 
 # Debugging Output (Check before clicking "Predict")
-st.write("🔹 Checking Input Features for Debugging:")
 st.write(f"✅ Input Shape: {user_input.shape}")  # Should be (1, 14)
 st.write(f"✅ Feature Vector: {user_input}")    # Should show 14 numbers
+st.write(f"🔹 Checking Input Features for Debugging: {input_data}")
+import numpy as np
+
+# Convert to NumPy array and reshape
+input_data = np.array([[competency_id]]).astype(float)  
+st.write(f"✅ Input Shape: {input_data.shape}")  # Debugging
+prediction = model.predict(input_data)[0]
+st.success(f"🎯 Predicted AI Skill Rank: {prediction:.2f}")
 
 # Prediction Button
 if st.button("Predict AI Skill Rank"):
