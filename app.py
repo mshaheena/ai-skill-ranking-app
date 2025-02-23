@@ -14,8 +14,10 @@ try:
     st.write("📂 Dataset Loaded Successfully!")
 except FileNotFoundError:
     st.warning("⚠ Dataset not found. Please upload it to GitHub.")
+    df = None
 except Exception as e:
     st.error(f"⚠ Error loading dataset: {e}")
+    df = None
 
 # 📌 **Load Trained Model**
 try:
@@ -23,10 +25,11 @@ try:
     st.write("✅ Model Loaded Successfully!")
 except FileNotFoundError:
     st.warning("⚠ Model file not found. Please upload `xgboost_ai_skill_model.pkl` to GitHub.")
+    model = None
 
 # 📊 **Dataset Overview**
-st.subheader("📊 AI Skill Distribution by Region")
-if 'df' in locals():
+if df is not None:
+    st.subheader("📊 AI Skill Distribution by Region")
     fig, ax = plt.subplots(figsize=(8, 5))
     region_counts = df["region"].value_counts()
     sns.barplot(x=region_counts.index, y=region_counts.values, palette="viridis", ax=ax)
@@ -35,21 +38,19 @@ if 'df' in locals():
     plt.ylabel("Number of AI Professionals")
     plt.title("AI Skill Distribution by Region")
     st.pyplot(fig)
-else:
-    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
 
-# 🔥 **Heatmap - Correlation Matrix**
-st.subheader("🔥 Correlation Heatmap of AI Skills")
-if 'df' in locals():
-    fig, ax = plt.subplots(figsize=(8,6))
-    sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
-    st.pyplot(fig)
-else:
-    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
+    # 🔥 **Heatmap - Correlation Matrix**
+    st.subheader("🔥 Correlation Heatmap of AI Skills")
+    numeric_df = df.select_dtypes(include=['number'])  # Select only numerical columns
+    if not numeric_df.empty:
+        fig, ax = plt.subplots(figsize=(8,6))
+        sns.heatmap(numeric_df.corr(), annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
+        st.pyplot(fig)
+    else:
+        st.warning("⚠ No numerical columns available for correlation analysis.")
 
-# 📦 **Boxplot - AI Skill Percentile by Region**
-st.subheader("📦 AI Skill Percentile Distribution by Region")
-if 'df' in locals():
+    # 📦 **Boxplot - AI Skill Percentile by Region**
+    st.subheader("📦 AI Skill Percentile Distribution by Region")
     fig, ax = plt.subplots(figsize=(8, 5))
     sns.boxplot(x="region", y="percentile_rank", data=df, palette="coolwarm", ax=ax)
     plt.xticks(rotation=45)
@@ -57,8 +58,6 @@ if 'df' in locals():
     plt.ylabel("AI Skill Percentile Rank")
     plt.title("AI Skill Distribution by Region")
     st.pyplot(fig)
-else:
-    st.warning("⚠ Dataset not loaded. Please upload the dataset.")
 
 # 🎯 **AI Skill Rank Prediction**
 st.subheader("🎯 AI Skill Rank Prediction")
@@ -93,11 +92,14 @@ st.write(f"✅ **Feature Vector:** {user_input}")  # Debugging input values
 
 # 🎯 **Prediction Button**
 if st.button("Predict AI Skill Rank", key="predict_button"):
-    try:
-        prediction = model.predict(user_input)[0]
-        st.success(f"🎯 Predicted AI Skill Rank: {prediction:.2f}")
-    except Exception as e:
-        st.error(f"⚠ Prediction failed: {e}")
+    if model is not None:
+        try:
+            prediction = model.predict(user_input)[0]
+            st.success(f"🎯 Predicted AI Skill Rank: {prediction:.2f}")
+        except Exception as e:
+            st.error(f"⚠ Prediction failed: {e}")
+    else:
+        st.warning("⚠ Model is not loaded. Please check `xgboost_ai_skill_model.pkl`.")
 
 # ✅ **Debugging Button**
 if st.button("Run Code", key="run_code_button"):
