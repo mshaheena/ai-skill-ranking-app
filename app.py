@@ -29,25 +29,27 @@ except FileNotFoundError:
 
 # 📊 **Dataset Overview**
 if df is not None:
-    st.subheader("📊 AI Skill Analysis")
+st.subheader("🏆 Top 10 Countries with Highest AI Skill Ranking")
+top_countries = df.nlargest(10, 'percentile_rank')[["country", "percentile_rank"]]
+st.dataframe(top_countries)
 
     # Create tabs for better visualization layout
     tab1, tab2, tab3 = st.tabs(["📊 Bar Graph", "🔥 Heatmap", "📦 Boxplot"])
 
     # 📊 **Bar Graph - AI Skill Distribution by Region**
     with tab1:
-        st.subheader("📊 AI Skill Distribution by Region")
-        selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique())
-        filtered_df = df[df["region"] == selected_region]
-        fig, ax = plt.subplots(figsize=(8, 5))
-        sns.barplot(x=filtered_df["region"].value_counts().index, 
-                    y=filtered_df["region"].value_counts().values, 
-                    palette="viridis", ax=ax)
-        plt.xticks(rotation=45)
-        plt.xlabel("Region")
-        plt.ylabel("Number of AI Professionals")
-        plt.title("AI Skill Distribution in Selected Region")
-        st.pyplot(fig)
+    st.subheader("📊 AI Skill Distribution by Region")
+    selected_region = st.selectbox("🌍 Select a Region for Analysis", df["region"].unique())
+    filtered_df = df[df["region"] == selected_region]
+    
+    fig, ax = plt.subplots(figsize=(8, 5))
+    sns.barplot(x=filtered_df["competency_id"], y=filtered_df["percentile_rank"], palette="viridis", ax=ax)
+    plt.xticks(rotation=45)
+    plt.xlabel("Competency ID")
+    plt.ylabel("AI Skill Percentile Rank")
+    plt.title(f"AI Skill Distribution in {selected_region}")
+    st.pyplot(fig)
+
 
     # 🔥 **Heatmap - Correlation Matrix**
     with tab2:
@@ -110,14 +112,16 @@ if st.button("Predict AI Skill Rank", key="predict_button"):
 
             # Compare prediction to dataset average
             avg_rank = df["percentile_rank"].mean() if df is not None else 0.5
-            if prediction > avg_rank:
-                st.success(f"🎯 **Predicted AI Skill Rank: {prediction:.2f}** (Above Average!) 🏆")
-            else:
-                st.warning(f"⚠ **Predicted AI Skill Rank: {prediction:.2f}** (Below Average) 📉")
+           if prediction > avg_rank:
+    st.success(f"🎯 **Predicted AI Skill Rank: {prediction:.2f}** 🚀\n\n **Above Average Performance!** 🏆")
+else:
+    st.warning(f"⚠ **Predicted AI Skill Rank: {prediction:.2f}** 📉\n\n **Below Average Performance.** Keep Improving! 💪")
+
         except Exception as e:
             st.error(f"⚠ Prediction failed: {e}")
     else:
         st.warning("⚠ Model is not loaded. Please check `xgboost_ai_skill_model.pkl`.")
+
 
 # 🔍 **Model Performance Metrics**
 st.subheader("🔍 Model Performance")
@@ -127,6 +131,8 @@ st.write("✅ **Mean Squared Error:** 0.0057")
 # ✅ **Debugging Button**
 if st.button("Run Code", key="run_code_button"):
     st.write("✅ **The code ran successfully!**")
+
+
 
 
 
