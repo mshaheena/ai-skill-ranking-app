@@ -29,10 +29,9 @@ except FileNotFoundError:
 
 # 📊 **Dataset Overview**
 if df is not None:
-st.subheader("🏆 Top 10 Countries with Highest AI Skill Ranking")
-top_countries = df.nlargest(10, 'percentile_rank')[["country", "percentile_rank"]]
-st.dataframe(top_countries)
-
+    st.subheader("🏆 Top 10 Countries with Highest AI Skill Ranking")  # ✅ Correct indentation
+    top_countries = df.nlargest(10, 'percentile_rank')[["country", "percentile_rank"]]
+    st.dataframe(top_countries)
     # Create tabs for better visualization layout
     tab1, tab2, tab3 = st.tabs(["📊 Bar Graph", "🔥 Heatmap", "📦 Boxplot"])
 
