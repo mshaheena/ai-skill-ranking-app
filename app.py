@@ -112,7 +112,7 @@ if st.button("Predict AI Skill Rank", key="predict_button"):
 
             # Compare prediction to dataset average
             avg_rank = df["percentile_rank"].mean() if df is not None else 0.5
-           if prediction > avg_rank:
+    if prediction > avg_rank:
         st.success(f"🎯 **Predicted AI Skill Rank: {prediction:.2f}** 🚀")
 else:
     st.warning(f"⚠ **Predicted AI Skill Rank: {prediction:.2f}** 📉\n\n **Below Average Performance.** Keep Improving! 💪")
