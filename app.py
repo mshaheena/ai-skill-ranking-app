@@ -16,19 +16,48 @@ try:
     df.dropna(inplace=True)  # Remove missing values
     st.write("📂 Dataset Loaded Successfully!")
 except FileNotFoundError:
-    st.warning("⚠ Dataset not found. Please upload it to GitHub.")
+    st.error("⚠ Dataset not found. Please upload it to GitHub.")
     df = None
+
+# 📌 **Dataset Health Check**
+if df is not None:
+    st.subheader("📌 Checking Dataset Health")
+
+    # **Check if dataset is empty**
+    if df.empty:
+        st.error("❌ Dataset is empty! Please check your CSV file.")
+
+    # **Check for missing values**
+    missing_values = df.isnull().sum()
+    if missing_values.sum() > 0:
+        st.warning(f"⚠ Warning: Missing values detected:\n{missing_values}")
+
+    # **Ensure numeric columns exist**
+    numeric_df = df.select_dtypes(include=['number'])
+    if numeric_df.empty:
+        st.error("⚠ No numeric columns available in dataset!")
+
+    # **Check if required columns exist**
+    required_columns = ["competency_id", "percentile_rank", "region", "incomegroup"]
+    missing_cols = [col for col in required_columns if col not in df.columns]
+    if missing_cols:
+        st.error(f"❌ Missing Required Columns: {missing_cols}")
+
+    # 🔹 Fix `competency_id` column (replace NaN with median)
+    if "competency_id" in df.columns:
+        df["competency_id"] = pd.to_numeric(df["competency_id"], errors="coerce")
+        df["competency_id"].fillna(df["competency_id"].median(), inplace=True)
 
 # 📌 **Load Trained Model**
 try:
     model = joblib.load("ai_skill_rank_model.pkl")
     st.write("✅ Model Loaded Successfully!")
 except FileNotFoundError:
-    st.warning("⚠ Model file not found. Please upload `ai_skill_rank_model.pkl` to GitHub.")
+    st.error("⚠ Model file not found. Please upload `ai_skill_rank_model.pkl` to GitHub.")
     model = None
 
 # 📊 **Dataset Overview & Visualizations**
-if df is not None:
+if df is not None and not df.empty:
     st.subheader("📊 AI Skill Analysis")
 
     tab1, tab2, tab3 = st.tabs(["📊 Bar Graph", "🔥 Heatmap", "📦 Boxplot"])
@@ -36,9 +65,10 @@ if df is not None:
     # 📊 **Bar Graph**
     with tab1:
         st.subheader("📊 AI Skill Distribution by Region")
-        selected_region = st.selectbox("🌍 Select a Region", df["region"].unique(), key="region_bar")
-        filtered_df = df[df["region"] == selected_region]
+        region_options = df["region"].dropna().unique().tolist()
+        selected_region = st.selectbox("🌍 Select a Region", region_options if region_options else ["No Data"], key="region_bar")
 
+        filtered_df = df[df["region"] == selected_region]
         fig, ax = plt.subplots(figsize=(8, 5))
         sns.barplot(x=filtered_df["competency_id"], y=filtered_df["percentile_rank"], palette="viridis", ax=ax)
         plt.xticks(rotation=45)
@@ -72,8 +102,11 @@ if df is not None:
 # 🎯 **AI Skill Rank Prediction**
 st.subheader("🎯 AI Skill Rank Prediction")
 
-region = st.selectbox("🌍 Select Region", df["region"].unique(), key="region_select")
-income_group = st.selectbox("💰 Select Income Group", df["incomegroup"].unique(), key="income_select")
+region_options = df["region"].dropna().unique().tolist() if df is not None else ["No Data"]
+income_options = df["incomegroup"].dropna().unique().tolist() if df is not None else ["No Data"]
+
+region = st.selectbox("🌍 Select Region", region_options, key="region_select")
+income_group = st.selectbox("💰 Select Income Group", income_options, key="income_select")
 competency_id = st.slider("📈 Competency ID (Skill Level)", int(df["competency_id"].min()), int(df["competency_id"].max()), 5, key="competency_slider")
 
 # ✅ **Feature Encoding (One-Hot Encoding)**
